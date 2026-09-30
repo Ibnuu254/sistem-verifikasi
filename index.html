@@ -230,55 +230,50 @@
 <div id="scene">
   <div class="qr-container">
     <div class="qr-card" id="qrCard">
-      <div class="qr-face front"  data-qr="front">
-        <img alt="QR">
-        <div class="scan-line"></div>
-      </div>
-      <div class="qr-face back"   data-qr="back">
-        <img alt="QR">
-        <div class="scan-line"></div>
-      </div>
-      <div class="qr-face right"  data-qr="right">
-        <img alt="QR">
-        <div class="scan-line"></div>
-      </div>
-      <div class="qr-face left"   data-qr="left">
-        <img alt="QR">
-        <div class="scan-line"></div>
-      </div>
-      <div class="qr-face top"    data-qr="top">
-        <img alt="QR">
-        <div class="scan-line"></div>
-      </div>
-      <div class="qr-face bottom" data-qr="bottom">
-        <img alt="QR">
-        <div class="scan-line"></div>
-      </div>
+      <div class="qr-face front"  data-qr><img alt="QR"><div class="scan-line"></div></div>
+      <div class="qr-face back"   data-qr><img alt="QR"><div class="scan-line"></div></div>
+      <div class="qr-face right"  data-qr><img alt="QR"><div class="scan-line"></div></div>
+      <div class="qr-face left"   data-qr><img alt="QR"><div class="scan-line"></div></div>
+      <div class="qr-face top"    data-qr><img alt="QR"><div class="scan-line"></div></div>
+      <div class="qr-face bottom" data-qr><img alt="QR"><div class="scan-line"></div></div>
     </div>
   </div>
 </div>
 
-<div class="info">📱 Scan QR-nya dengan kamera HP kamu</div>
+<div class="info">📱 Scan QR untuk chat WhatsApp</div>
 
 <div class="buttons">
   <button id="spinBtn">Putar Otomatis</button>
   <button id="stopBtn">Stop</button>
-  <button id="randomBtn">Ganti Link</button>
+  <button id="randomBtn">Ganti Pesan</button>
 </div>
 
 <script>
-  // ====== KONFIGURASI LINK ======
+  // ============================================
+  // 📱 NOMOR WA KAMU
+  // ============================================
+  const NOMOR_WA = '62895326628135';  // ✅ Sudah diisi nomor kamu
+
+  // Fungsi bikin URL WA
+  function waLink(pesan) {
+    const base = 'https://wa.me/' + NOMOR_WA;
+    if (pesan && pesan.length > 0) {
+      return base + '?text=' + encodeURIComponent(pesan);
+    }
+    return base;
+  }
+
+  // Pesan berbeda untuk tiap sisi kubus
   const LINKS = {
-    front:  'https://wa.me/6281234567890',
-    back:   'https://github.com',
-    right:  'https://www.google.com',
-    left:   'https://www.youtube.com',
-    top:    'https://www.instagram.com',
-    bottom: 'https://www.tiktok.com'
+    front:  waLink('Halo'),            // "Halo"
+    back:   waLink('Saya mau tanya'),  // "Saya mau tanya"
+    right:  waLink('Info dong'),       // "Info dong"
+    left:   waLink('Hai'),             // "Hai"
+    top:    waLink('Assalamualaikum'), // "Assalamualaikum"
+    bottom: waLink('')                 // (kosong — langsung buka WA)
   };
 
   // ====== GENERATE QR PAKAI API SERVER ======
-  // Pakai api.qrserver.com — paling reliable, tidak butuh library
   function qrUrl(text, size) {
     const s = size || 400;
     return 'https://api.qrserver.com/v1/create-qr-code/?size=' + s + 'x' + s +
@@ -290,7 +285,7 @@
     document.querySelectorAll('[data-qr]').forEach(faceEl => {
       const key = faceEl.dataset.qr;
       const img = faceEl.querySelector('img');
-      if (img) {
+      if (img && LINKS[key]) {
         img.src = qrUrl(LINKS[key], 400);
       }
     });
@@ -375,14 +370,12 @@
   document.getElementById('spinBtn').onclick = () => { autoSpin = true; };
   document.getElementById('stopBtn').onclick = () => { autoSpin = false; };
   document.getElementById('randomBtn').onclick = () => {
-    const q = Math.random().toString(36).substring(7);
-    LINKS.front  = 'https://www.google.com/search?q=' + q;
-    LINKS.back   = 'https://www.google.com/search?q=' + q + '-b';
-    LINKS.right  = 'https://www.google.com/search?q=' + q + '-r';
-    LINKS.left   = 'https://www.google.com/search?q=' + q + '-l';
-    LINKS.top    = 'https://www.google.com/search?q=' + q + '-t';
-    LINKS.bottom = 'https://www.google.com/search?q=' + q + '-bot';
-    renderAllQR();
+    const pesanList = ['Halo', 'Hai', 'Test', 'Info', 'Bantu', 'Tanya', 'P'];
+    const p = pesanList[Math.floor(Math.random() * pesanList.length)];
+    document.querySelectorAll('[data-qr]').forEach(faceEl => {
+      const img = faceEl.querySelector('img');
+      if (img) img.src = qrUrl(waLink(p), 400);
+    });
   };
 
   function loop() {
