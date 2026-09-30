@@ -5,21 +5,31 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sistem Verifikasi</title>
 <style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
   body {
     background: #000;
     color: #00ff41;
     font-family: Arial, sans-serif;
-    margin: 0;
     height: 100vh;
     overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     cursor: grab;
     user-select: none;
   }
 
   body.dragging { cursor: grabbing; }
+
+  /* ============================================
+     HALAMAN UTAMA (HACKER)
+     ============================================ */
+  #mainPage {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.5s ease;
+  }
 
   #logoBg {
     position: fixed;
@@ -63,6 +73,7 @@
     margin: 0;
     z-index: 3;
     letter-spacing: 3px;
+    font-family: Arial, sans-serif;
   }
 
   #scene {
@@ -96,12 +107,17 @@
     height: 240px;
     background: #fff;
     border: 4px solid #00ff41;
-    box-shadow:
-      0 0 25px rgba(0, 255, 65, 0.8),
-      inset 0 0 10px rgba(0, 0, 0, 0.2);
-    box-sizing: border-box;
+    box-shadow: 0 0 25px rgba(0, 255, 65, 0.8),
+                inset 0 0 10px rgba(0, 0, 0, 0.2);
     overflow: hidden;
     padding: 6px;
+    cursor: pointer;
+    transition: box-shadow 0.3s;
+  }
+
+  .qr-face:hover {
+    box-shadow: 0 0 45px rgba(0, 255, 65, 1),
+                inset 0 0 10px rgba(0, 0, 0, 0.2);
   }
 
   .qr-face img {
@@ -110,7 +126,7 @@
     display: block;
     object-fit: contain;
     image-rendering: pixelated;
-    image-rendering: crisp-edges;
+    pointer-events: none;
   }
 
   .front  { transform: translateZ(120px); }
@@ -125,12 +141,7 @@
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg,
-                transparent,
-                #00ff41,
-                #fff,
-                #00ff41,
-                transparent);
+    background: linear-gradient(90deg, transparent, #00ff41, #fff, #00ff41, transparent);
     box-shadow: 0 0 20px #00ff41;
     animation: scan 2s linear infinite;
     pointer-events: none;
@@ -160,6 +171,7 @@
     font-family: Arial, sans-serif;
     cursor: pointer;
     margin: 0 5px;
+    transition: all 0.2s;
   }
 
   button:hover {
@@ -178,122 +190,250 @@
     opacity: 0.6;
     z-index: 3;
     letter-spacing: 1px;
+    font-family: Arial, sans-serif;
+  }
+
+  /* ============================================
+     HALAMAN CINTA (ROMANTIS)
+     ============================================ */
+  #lovePage {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 50%, #ffb6c1 100%);
+    overflow: hidden;
+    font-family: Georgia, serif;
+    cursor: default;
+  }
+
+  #lovePage.active {
+    display: flex;
+    animation: fadeIn 0.6s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  /* Background romantis via canvas */
+  #loveBg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* Kartu kata cinta */
+  .love-card {
+    position: relative;
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 24px;
+    padding: 50px 40px;
+    max-width: 500px;
+    width: 85%;
+    text-align: center;
+    color: #fff;
+    box-shadow: 0 20px 60px rgba(255, 20, 100, 0.4);
+    animation: cardFloat 4s ease-in-out infinite;
+  }
+
+  @keyframes cardFloat {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-10px); }
+  }
+
+  .heart-icon {
+    font-size: 60px;
+    margin-bottom: 20px;
+    animation: heartBeat 1.3s ease-in-out infinite;
+    display: inline-block;
+  }
+
+  @keyframes heartBeat {
+    0%, 100% { transform: scale(1); }
+    25%      { transform: scale(1.15); }
+    50%      { transform: scale(1); }
+    75%      { transform: scale(1.1); }
+  }
+
+  .love-title {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 24px;
+    text-shadow: 0 2px 10px rgba(255, 20, 100, 0.5);
+    letter-spacing: 1px;
+  }
+
+  .love-text {
+    font-size: 18px;
+    line-height: 1.7;
+    margin-bottom: 30px;
+    font-style: italic;
+    text-shadow: 0 2px 8px rgba(255, 20, 100, 0.4);
+  }
+
+  .love-divider {
+    width: 80px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.6);
+    margin: 20px auto;
+    border-radius: 2px;
+  }
+
+  .back-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border: 2px solid #fff;
+    padding: 12px 30px;
+    font-size: 14px;
+    font-family: Arial, sans-serif;
+    cursor: pointer;
+    border-radius: 30px;
+    letter-spacing: 2px;
+    transition: all 0.3s;
+    margin-top: 10px;
+  }
+
+  .back-btn:hover {
+    background: #fff;
+    color: #ff4d88;
+    transform: scale(1.05);
+  }
+
+  /* Floating hearts emoji */
+  .float-heart {
+    position: absolute;
+    font-size: 24px;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 1;
   }
 </style>
 </head>
 <body>
 
-<svg id="logoBg" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <filter id="glitch">
-      <feGaussianBlur stdDeviation="1" result="blur"/>
-      <feOffset in="blur" dx="3" dy="0" result="o1"/>
-      <feOffset in="blur" dx="-3" dy="0" result="o2"/>
-      <feMerge>
-        <feMergeNode in="o1"/>
-        <feMergeNode in="o2"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
-  </defs>
+<!-- ============================================
+     HALAMAN UTAMA
+     ============================================ -->
+<div id="mainPage">
 
-  <polygon points="200,10 365,105 365,295 200,390 35,295 35,105"
-           fill="none" stroke="#00ff41" stroke-width="8"/>
-  <polygon points="200,55 330,132 330,268 200,345 70,268 70,132"
-           fill="none" stroke="#00ff41" stroke-width="4" opacity="0.8"/>
-  <polygon points="200,100 295,155 295,245 200,300 105,245 105,155"
-           fill="none" stroke="#00ff41" stroke-width="2" opacity="0.5"/>
-  <polygon points="200,75 320,295 80,295"
-           fill="none" stroke="#00ff41" stroke-width="5"/>
-  <polygon points="200,110 290,280 110,280"
-           fill="none" stroke="#00ff41" stroke-width="2" opacity="0.7"/>
+  <svg id="logoBg" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <filter id="glitch">
+        <feGaussianBlur stdDeviation="1" result="blur"/>
+        <feOffset in="blur" dx="3" dy="0" result="o1"/>
+        <feOffset in="blur" dx="-3" dy="0" result="o2"/>
+        <feMerge>
+          <feMergeNode in="o1"/>
+          <feMergeNode in="o2"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+    <polygon points="200,10 365,105 365,295 200,390 35,295 35,105"
+             fill="none" stroke="#00ff41" stroke-width="8"/>
+    <polygon points="200,55 330,132 330,268 200,345 70,268 70,132"
+             fill="none" stroke="#00ff41" stroke-width="4" opacity="0.8"/>
+    <polygon points="200,100 295,155 295,245 200,300 105,245 105,155"
+             fill="none" stroke="#00ff41" stroke-width="2" opacity="0.5"/>
+    <polygon points="200,75 320,295 80,295"
+             fill="none" stroke="#00ff41" stroke-width="5"/>
+    <polygon points="200,110 290,280 110,280"
+             fill="none" stroke="#00ff41" stroke-width="2" opacity="0.7"/>
+    <path d="M 115,90 Q 80,90 80,135 L 80,175 Q 80,200 55,200 Q 80,200 80,225 L 80,265 Q 80,310 115,310"
+          fill="none" stroke="#00ff41" stroke-width="8" stroke-linecap="round" filter="url(#glitch)"/>
+    <path d="M 285,90 Q 320,90 320,135 L 320,175 Q 320,200 345,200 Q 320,200 320,225 L 320,265 Q 320,310 285,310"
+          fill="none" stroke="#00ff41" stroke-width="8" stroke-linecap="round" filter="url(#glitch)"/>
+    <circle cx="200" cy="10" r="4" fill="#00ff41"/>
+    <circle cx="365" cy="105" r="4" fill="#00ff41"/>
+    <circle cx="365" cy="295" r="4" fill="#00ff41"/>
+    <circle cx="200" cy="390" r="4" fill="#00ff41"/>
+    <circle cx="35" cy="295" r="4" fill="#00ff41"/>
+    <circle cx="35" cy="105" r="4" fill="#00ff41"/>
+  </svg>
 
-  <path d="M 115,90 Q 80,90 80,135 L 80,175 Q 80,200 55,200 Q 80,200 80,225 L 80,265 Q 80,310 115,310"
-        fill="none" stroke="#00ff41" stroke-width="8" stroke-linecap="round"
-        filter="url(#glitch)"/>
-  <path d="M 285,90 Q 320,90 320,135 L 320,175 Q 320,200 345,200 Q 320,200 320,225 L 320,265 Q 320,310 285,310"
-        fill="none" stroke="#00ff41" stroke-width="8" stroke-linecap="round"
-        filter="url(#glitch)"/>
+  <canvas id="binaryBg"></canvas>
 
-  <circle cx="200" cy="10" r="4" fill="#00ff41"/>
-  <circle cx="365" cy="105" r="4" fill="#00ff41"/>
-  <circle cx="365" cy="295" r="4" fill="#00ff41"/>
-  <circle cx="200" cy="390" r="4" fill="#00ff41"/>
-  <circle cx="35" cy="295" r="4" fill="#00ff41"/>
-  <circle cx="35" cy="105" r="4" fill="#00ff41"/>
-</svg>
+  <h1>SISTEM VERIFIKASI</h1>
 
-<canvas id="binaryBg"></canvas>
-
-<h1>SISTEM VERIFIKASI</h1>
-
-<div id="scene">
-  <div class="qr-container">
-    <div class="qr-card" id="qrCard">
-      <div class="qr-face front"  data-qr><img alt="QR"><div class="scan-line"></div></div>
-      <div class="qr-face back"   data-qr><img alt="QR"><div class="scan-line"></div></div>
-      <div class="qr-face right"  data-qr><img alt="QR"><div class="scan-line"></div></div>
-      <div class="qr-face left"   data-qr><img alt="QR"><div class="scan-line"></div></div>
-      <div class="qr-face top"    data-qr><img alt="QR"><div class="scan-line"></div></div>
-      <div class="qr-face bottom" data-qr><img alt="QR"><div class="scan-line"></div></div>
+  <div id="scene">
+    <div class="qr-container">
+      <div class="qr-card" id="qrCard">
+        <div class="qr-face front"  data-side="0"><img alt="QR"><div class="scan-line"></div></div>
+        <div class="qr-face back"   data-side="1"><img alt="QR"><div class="scan-line"></div></div>
+        <div class="qr-face right"  data-side="2"><img alt="QR"><div class="scan-line"></div></div>
+        <div class="qr-face left"   data-side="3"><img alt="QR"><div class="scan-line"></div></div>
+        <div class="qr-face top"    data-side="4"><img alt="QR"><div class="scan-line"></div></div>
+        <div class="qr-face bottom" data-side="5"><img alt="QR"><div class="scan-line"></div></div>
+      </div>
     </div>
+  </div>
+
+  <div class="info">📱 Scan QR atau klik untuk buka pesan 💌</div>
+
+  <div class="buttons">
+    <button id="spinBtn">Putar Otomatis</button>
+    <button id="stopBtn">Stop</button>
+    <button id="randomBtn">Acak Pesan</button>
   </div>
 </div>
 
-<div class="info">📱 Scan QR untuk chat WhatsApp</div>
-
-<div class="buttons">
-  <button id="spinBtn">Putar Otomatis</button>
-  <button id="stopBtn">Stop</button>
-  <button id="randomBtn">Ganti Pesan</button>
+<!-- ============================================
+     HALAMAN CINTA
+     ============================================ -->
+<div id="lovePage">
+  <canvas id="loveBg"></canvas>
+  <div class="love-card">
+    <div class="heart-icon">💖</div>
+    <div class="love-title" id="loveTitle">Untuk Kamu</div>
+    <div class="love-divider"></div>
+    <div class="love-text" id="loveText">...</div>
+    <button class="back-btn" id="backBtn">← KEMBALI</button>
+  </div>
 </div>
 
 <script>
   // ============================================
-  // 📱 NOMOR WA KAMU
+  // 📝 DAFTAR KATA-KATA PERCINTAAN (EDIT DI SINI)
   // ============================================
-  const NOMOR_WA = '6285649967894';  // ✅ Nomor baru kamu
-
-  // Fungsi bikin URL WA
-  function waLink(pesan) {
-    const base = 'https://wa.me/' + NOMOR_WA;
-    if (pesan && pesan.length > 0) {
-      return base + '?text=' + encodeURIComponent(pesan);
+  const LOVE_MESSAGES = [
+    {
+      title: "Untuk Kamu ❤️",
+      text: "Kamu adalah alasan aku tersenyum setiap hari. Tanpamu, dunia ini terasa hampa."
+    },
+    {
+      title: "Cinta Sejati 💕",
+      text: "Setiap detik bersamamu adalah keajaiban yang tak ingin aku lewatkan."
+    },
+    {
+      title: "Rindu 💗",
+      text: "Aku merindukanmu lebih dari yang bisa diungkapkan kata-kata."
+    },
+    {
+      title: "Selamanya 💞",
+      text: "Aku ingin bersamamu selamanya, melewati suka dan duka bersama."
+    },
+    {
+      title: "Kamu Istimewa ✨",
+      text: "Di antara miliaran manusia, aku memilihmu. Dan akan selalu memilihmu."
+    },
+    {
+      title: "Jantungku 💓",
+      text: "Kamu adalah detak jantungku, denyut nadi yang membuatku hidup."
     }
-    return base;
-  }
+  ];
 
-  // Pesan berbeda untuk tiap sisi kubus
-  const LINKS = {
-    front:  waLink('Halo'),            // "Halo"
-    back:   waLink('Saya mau tanya'),  // "Saya mau tanya"
-    right:  waLink('Info dong'),       // "Info dong"
-    left:   waLink('Hai'),             // "Hai"
-    top:    waLink('Assalamualaikum'), // "Assalamualaikum"
-    bottom: waLink('')                 // (kosong — langsung buka WA)
-  };
-
-  // ====== GENERATE QR PAKAI API SERVER ======
-  function qrUrl(text, size) {
-    const s = size || 400;
-    return 'https://api.qrserver.com/v1/create-qr-code/?size=' + s + 'x' + s +
-           '&data=' + encodeURIComponent(text) +
-           '&color=000000&bgcolor=FFFFFF&margin=0&ecc=H';
-  }
-
-  function renderAllQR() {
-    document.querySelectorAll('[data-qr]').forEach(faceEl => {
-      const key = faceEl.dataset.qr;
-      const img = faceEl.querySelector('img');
-      if (img && LINKS[key]) {
-        img.src = qrUrl(LINKS[key], 400);
-      }
-    });
-  }
-
-  renderAllQR();
-
-  // ====== HUJAN BINER ======
+  // ============================================
+  // HALAMAN UTAMA - BACKGROUND BINER
+  // ============================================
   const canvas = document.getElementById('binaryBg');
   const ctx = canvas.getContext('2d');
   let columns = [];
@@ -333,7 +473,37 @@
   window.addEventListener('resize', resizeCanvas);
   setInterval(drawBinary, 50);
 
-  // ====== QR 3D ======
+  // ============================================
+  // GENERATE QR
+  // ============================================
+  // QR berisi URL yang kalau di-scan akan buka halaman utama
+  // Kita pakai URL GitHub Pages kamu
+  const BASE_URL = 'https://ibnuu254.github.io/sistem-verifikasi';
+
+  function qrUrl(text, size) {
+    const s = size || 400;
+    return 'https://api.qrserver.com/v1/create-qr-code/?size=' + s + 'x' + s +
+           '&data=' + encodeURIComponent(text) +
+           '&color=000000&bgcolor=FFFFFF&margin=0&ecc=H';
+  }
+
+  // Setiap QR berisi link dengan parameter #love=0,1,2,dst
+  // Jadi saat di-scan dari HP, langsung buka halaman cinta yang sesuai
+  function renderAllQR() {
+    document.querySelectorAll('[data-side]').forEach(faceEl => {
+      const side = faceEl.dataset.side;
+      const img = faceEl.querySelector('img');
+      if (img) {
+        img.src = qrUrl(BASE_URL + '#love=' + side, 400);
+      }
+    });
+  }
+
+  renderAllQR();
+
+  // ============================================
+  // QR 3D - DRAG
+  // ============================================
   const qrCard = document.getElementById('qrCard');
   const body = document.body;
 
@@ -347,6 +517,7 @@
   }
 
   body.addEventListener('mousedown', (e) => {
+    if (e.target.closest('#lovePage')) return;
     isDragging = true;
     body.classList.add('dragging');
     lastX = e.clientX;
@@ -370,12 +541,8 @@
   document.getElementById('spinBtn').onclick = () => { autoSpin = true; };
   document.getElementById('stopBtn').onclick = () => { autoSpin = false; };
   document.getElementById('randomBtn').onclick = () => {
-    const pesanList = ['Halo', 'Hai', 'Test', 'Info', 'Bantu', 'Tanya', 'P'];
-    const p = pesanList[Math.floor(Math.random() * pesanList.length)];
-    document.querySelectorAll('[data-qr]').forEach(faceEl => {
-      const img = faceEl.querySelector('img');
-      if (img) img.src = qrUrl(waLink(p), 400);
-    });
+    // Acak urutan pesan
+    LOVE_MESSAGES.sort(() => Math.random() - 0.5);
   };
 
   function loop() {
@@ -388,6 +555,126 @@
   }
   loop();
   updateQR();
+
+  // ============================================
+  // KLIK QR → BUKA HALAMAN CINTA
+  // ============================================
+  document.querySelectorAll('[data-side]').forEach(faceEl => {
+    faceEl.addEventListener('click', () => {
+      const side = parseInt(faceEl.dataset.side);
+      openLovePage(side);
+    });
+  });
+
+  // ============================================
+  // HALAMAN CINTA - BACKGROUND HATI JATUH
+  // ============================================
+  const lovePage = document.getElementById('lovePage');
+  const loveBg = document.getElementById('loveBg');
+  const loveCtx = loveBg.getContext('2d');
+  let loveHearts = [];
+  let loveAnimId = null;
+
+  const HEART_EMOJIS = ['💖', '💕', '💗', '💓', '💞', '❤️', '💘', '🌸'];
+
+  function initLoveBg() {
+    loveBg.width = window.innerWidth;
+    loveBg.height = window.innerHeight;
+    loveHearts = [];
+    for (let i = 0; i < 40; i++) {
+      loveHearts.push(createHeart());
+    }
+  }
+
+  function createHeart() {
+    return {
+      x: Math.random() * loveBg.width,
+      y: Math.random() * -loveBg.height,
+      size: 16 + Math.random() * 24,
+      speed: 0.5 + Math.random() * 1.5,
+      emoji: HEART_EMOJIS[Math.floor(Math.random() * HEART_EMOJIS.length)],
+      sway: Math.random() * Math.PI * 2,
+      swaySpeed: 0.01 + Math.random() * 0.02
+    };
+  }
+
+  function drawLoveBg() {
+    loveCtx.clearRect(0, 0, loveBg.width, loveBg.height);
+
+    loveHearts.forEach((h, i) => {
+      loveCtx.font = h.size + 'px Arial';
+      loveCtx.textAlign = 'center';
+      loveCtx.globalAlpha = 0.7;
+      loveCtx.fillText(h.emoji, h.x + Math.sin(h.sway) * 20, h.y);
+
+      h.y += h.speed;
+      h.sway += h.swaySpeed;
+
+      if (h.y > loveBg.height + 50) {
+        loveHearts[i] = createHeart();
+        loveHearts[i].y = -50;
+      }
+    });
+
+    loveCtx.globalAlpha = 1;
+    loveAnimId = requestAnimationFrame(drawLoveBg);
+  }
+
+  // ============================================
+  // OPEN / CLOSE LOVE PAGE
+  // ============================================
+  function openLovePage(sideIndex) {
+    const msg = LOVE_MESSAGES[sideIndex % LOVE_MESSAGES.length];
+    document.getElementById('loveTitle').textContent = msg.title;
+    document.getElementById('loveText').textContent = msg.text;
+
+    lovePage.classList.add('active');
+    document.getElementById('mainPage').style.opacity = '0';
+
+    if (!loveAnimId) {
+      initLoveBg();
+      drawLoveBg();
+    }
+  }
+
+  function closeLovePage() {
+    lovePage.classList.remove('active');
+    document.getElementById('mainPage').style.opacity = '1';
+
+    if (loveAnimId) {
+      cancelAnimationFrame(loveAnimId);
+      loveAnimId = null;
+    }
+  }
+
+  document.getElementById('backBtn').addEventListener('click', closeLovePage);
+
+  // ============================================
+  // CEK URL: kalau ada #love=N → langsung buka halaman cinta
+  // (untuk yang scan QR dari HP)
+  // ============================================
+  function checkHash() {
+    const hash = window.location.hash;
+    const match = hash.match(/#love=(\d+)/);
+    if (match) {
+      const side = parseInt(match[1]);
+      setTimeout(() => openLovePage(side), 500);
+    } else {
+      closeLovePage();
+    }
+  }
+
+  window.addEventListener('hashchange', checkHash);
+  window.addEventListener('load', checkHash);
+
+  // ============================================
+  // RESIZE HANDLER
+  // ============================================
+  window.addEventListener('resize', () => {
+    if (loveAnimId) {
+      initLoveBg();
+    }
+  });
 </script>
 
 </body>
