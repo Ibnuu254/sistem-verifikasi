@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sistem Verifikasi</title>
+<title>Arsip Kata Perang</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -194,22 +194,21 @@
   }
 
   /* ============================================
-     HALAMAN CINTA (ROMANTIS)
+     HALAMAN KATA PERANG
      ============================================ */
-  #lovePage {
+  #warPage {
     position: fixed;
     inset: 0;
     z-index: 100;
     display: none;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 50%, #ffb6c1 100%);
+    background: #1a0000;
     overflow: hidden;
-    font-family: Georgia, serif;
     cursor: default;
   }
 
-  #lovePage.active {
+  #warPage.active {
     display: flex;
     animation: fadeIn 0.6s ease;
   }
@@ -219,100 +218,189 @@
     to   { opacity: 1; }
   }
 
-  /* Background romantis via canvas */
-  #loveBg {
+  /* Background animasi perang */
+  #warBg {
     position: absolute;
     inset: 0;
     z-index: 0;
     pointer-events: none;
+    background:
+      radial-gradient(ellipse at bottom, rgba(139, 0, 0, 0.6) 0%, transparent 60%),
+      radial-gradient(ellipse at top, rgba(80, 0, 0, 0.4) 0%, transparent 50%),
+      linear-gradient(180deg, #0a0000 0%, #1a0000 50%, #2a0505 100%);
   }
 
-  /* Kartu kata cinta */
-  .love-card {
+  #warBg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 80%, rgba(255, 100, 0, 0.18) 0%, transparent 30%),
+      radial-gradient(circle at 80% 70%, rgba(255, 50, 0, 0.15) 0%, transparent 35%),
+      radial-gradient(circle at 50% 90%, rgba(200, 0, 0, 0.2) 0%, transparent 40%);
+    animation: smokeMove 8s ease-in-out infinite alternate;
+  }
+
+  @keyframes smokeMove {
+    0%   { transform: translateX(-3%) translateY(0) scale(1); }
+    100% { transform: translateX(3%) translateY(-2%) scale(1.05); }
+  }
+
+  #warBg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(0deg, transparent 0 2px, rgba(0,0,0,0.15) 2px 3px),
+      repeating-linear-gradient(90deg, transparent 0 2px, rgba(0,0,0,0.1) 2px 3px);
+    opacity: 0.5;
+  }
+
+  /* Kartu kutipan */
+  .war-card {
     position: relative;
     z-index: 2;
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border: 2px solid rgba(255, 255, 255, 0.5);
-    border-radius: 24px;
-    padding: 50px 40px;
-    max-width: 500px;
-    width: 85%;
+    background: rgba(20, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    border: 2px solid #ff3b3b;
+    border-radius: 8px;
+    padding: 45px 40px;
+    max-width: 600px;
+    width: 90%;
     text-align: center;
-    color: #fff;
-    box-shadow: 0 20px 60px rgba(255, 20, 100, 0.4);
-    animation: cardFloat 4s ease-in-out infinite;
+    color: #ffcccc;
+    box-shadow:
+      0 0 30px rgba(255, 50, 50, 0.5),
+      inset 0 0 40px rgba(100, 0, 0, 0.6);
+    animation: cardFlicker 4s ease-in-out infinite;
   }
 
-  @keyframes cardFloat {
-    0%, 100% { transform: translateY(0); }
-    50%      { transform: translateY(-10px); }
+  @keyframes cardFlicker {
+    0%, 100% { box-shadow: 0 0 30px rgba(255, 50, 50, 0.5), inset 0 0 40px rgba(100, 0, 0, 0.6); }
+    50%      { box-shadow: 0 0 45px rgba(255, 50, 50, 0.8), inset 0 0 60px rgba(150, 0, 0, 0.8); }
   }
 
-  .heart-icon {
-    font-size: 60px;
-    margin-bottom: 20px;
-    animation: heartBeat 1.3s ease-in-out infinite;
+  /* Tanda kutip besar */
+  .quote-mark {
+    font-size: 70px;
+    color: #8b0000;
+    line-height: 0.8;
+    font-family: Georgia, serif;
+    text-shadow: 0 0 20px #ff0000;
+    margin-bottom: -10px;
+  }
+
+  .quote-icon {
+    font-size: 40px;
+    margin-bottom: 10px;
     display: inline-block;
+    animation: pulse 2s ease-in-out infinite;
   }
 
-  @keyframes heartBeat {
-    0%, 100% { transform: scale(1); }
-    25%      { transform: scale(1.15); }
-    50%      { transform: scale(1); }
-    75%      { transform: scale(1.1); }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50%      { transform: scale(1.1); opacity: 0.85; }
   }
 
-  .love-title {
-    font-size: 28px;
-    font-weight: bold;
-    margin-bottom: 24px;
-    text-shadow: 0 2px 10px rgba(255, 20, 100, 0.5);
-    letter-spacing: 1px;
-  }
-
-  .love-text {
-    font-size: 18px;
-    line-height: 1.7;
-    margin-bottom: 30px;
+  /* Kutipan */
+  .war-quote {
+    font-size: 20px;
+    line-height: 1.6;
     font-style: italic;
-    text-shadow: 0 2px 8px rgba(255, 20, 100, 0.4);
+    color: #ffdddd;
+    text-shadow: 0 0 10px rgba(255, 50, 50, 0.6);
+    margin: 20px 0;
+    font-family: Georgia, serif;
+    letter-spacing: 0.5px;
   }
 
-  .love-divider {
-    width: 80px;
+  /* Garis pemisah */
+  .war-divider {
+    width: 100px;
     height: 2px;
-    background: rgba(255, 255, 255, 0.6);
+    background: linear-gradient(90deg, transparent, #ff3b3b, transparent);
     margin: 20px auto;
-    border-radius: 2px;
+    box-shadow: 0 0 10px #ff3b3b;
+  }
+
+  /* Nama tokoh */
+  .war-author {
+    font-size: 16px;
+    color: #ff5555;
+    font-weight: bold;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px #ff0000;
+    margin-top: 15px;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* Info tokoh */
+  .war-role {
+    font-size: 12px;
+    color: #ffaa00;
+    letter-spacing: 2px;
+    margin-top: 8px;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* Konteks kutipan */
+  .war-context {
+    font-size: 12px;
+    color: #cc8888;
+    margin-top: 20px;
+    font-style: italic;
+    line-height: 1.5;
+    opacity: 0.85;
   }
 
   .back-btn {
-    background: rgba(255, 255, 255, 0.2);
-    color: #fff;
-    border: 2px solid #fff;
+    background: rgba(139, 0, 0, 0.4);
+    color: #ff3b3b;
+    border: 2px solid #ff3b3b;
     padding: 12px 30px;
-    font-size: 14px;
-    font-family: Arial, sans-serif;
+    font-size: 13px;
+    font-family: 'Courier New', monospace;
     cursor: pointer;
-    border-radius: 30px;
-    letter-spacing: 2px;
+    letter-spacing: 3px;
     transition: all 0.3s;
-    margin-top: 10px;
+    margin-top: 25px;
+    border-radius: 4px;
   }
 
   .back-btn:hover {
-    background: #fff;
-    color: #ff4d88;
-    transform: scale(1.05);
+    background: #ff3b3b;
+    color: #000;
+    box-shadow: 0 0 25px #ff3b3b;
   }
 
-  /* Floating hearts emoji */
-  .float-heart {
+  /* Scan line gelap */
+  .war-scanline {
     position: absolute;
-    font-size: 24px;
-    opacity: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, rgba(255, 50, 50, 0.5), transparent);
+    animation: warScan 4s linear infinite;
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  @keyframes warScan {
+    0%   { top: -5%; opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 1; }
+    100% { top: 105%; opacity: 0; }
+  }
+
+  /* Percikan api */
+  .spark {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: #ffaa00;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #ff6600;
     pointer-events: none;
     z-index: 1;
   }
@@ -362,7 +450,7 @@
 
   <canvas id="binaryBg"></canvas>
 
-  <h1>SISTEM VERIFIKASI</h1>
+  <h1>ARSIP KATA PERANG</h1>
 
   <div id="scene">
     <div class="qr-container">
@@ -377,62 +465,85 @@
     </div>
   </div>
 
-  <div class="info">📱 Scan QR atau klik untuk buka pesan 💌</div>
+  <div class="info">📱 Scan QR atau klik untuk dengar kata mereka ⚔️</div>
 
   <div class="buttons">
     <button id="spinBtn">Putar Otomatis</button>
     <button id="stopBtn">Stop</button>
-    <button id="randomBtn">Acak Pesan</button>
+    <button id="randomBtn">Acak Kutipan</button>
   </div>
 </div>
 
 <!-- ============================================
-     HALAMAN CINTA
+     HALAMAN KATA PERANG
      ============================================ -->
-<div id="lovePage">
-  <canvas id="loveBg"></canvas>
-  <div class="love-card">
-    <div class="heart-icon">💖</div>
-    <div class="love-title" id="loveTitle">Untuk Kamu</div>
-    <div class="love-divider"></div>
-    <div class="love-text" id="loveText">...</div>
+<div id="warPage">
+  <div id="warBg"></div>
+  <div class="war-scanline"></div>
+
+  <div class="war-card">
+    <div class="quote-mark">"</div>
+    <div class="quote-icon" id="warIcon">⚔️</div>
+    <div class="war-quote" id="warQuote">...</div>
+    <div class="war-divider"></div>
+    <div class="war-author" id="warAuthor">— Tokoh</div>
+    <div class="war-role" id="warRole">Jenderal</div>
+    <div class="war-context" id="warContext">...</div>
     <button class="back-btn" id="backBtn">← KEMBALI</button>
   </div>
 </div>
 
 <script>
   // ============================================
-  // 📝 DAFTAR KATA-KATA PERCINTAAN (EDIT DI SINI)
+  // 📚 DAFTAR KATA-KATA TOKOH PERANG (EDIT DI SINI)
   // ============================================
-  const LOVE_MESSAGES = [
+  const WAR_QUOTES = [
     {
-      title: "Untuk Kamu ❤️",
-      text: "Kamu adalah alasan aku tersenyum setiap hari. Tanpamu, dunia ini terasa hampa."
+      icon: "⚔️",
+      quote: "Veni, vidi, vici. — Aku datang, aku lihat, aku menang.",
+      author: "Julius Caesar",
+      role: "Kaisar Romawi",
+      context: "Diucapkan setelah kemenangan cepat dalam Perang Zela, 47 SM. Tiga kata yang mengguncang dunia."
     },
     {
-      title: "Cinta Sejati 💕",
-      text: "Setiap detik bersamamu adalah keajaiban yang tak ingin aku lewatkan."
+      icon: "🇬🇧",
+      quote: "Kami akan bertarung di pantai, kami akan bertarung di darat, kami akan bertarung di ladang dan di jalanan. Kami tidak akan pernah menyerah.",
+      author: "Winston Churchill",
+      role: "Perdana Menteri Inggris",
+      context: "Pidato legendaris 4 Juni 1940 di depan Parlemen, saat Inggris terancam invasi Nazi Jerman."
     },
     {
-      title: "Rindu 💗",
-      text: "Aku merindukanmu lebih dari yang bisa diungkapkan kata-kata."
+      icon: "🔥",
+      quote: "Perang adalah neraka.",
+      author: "William Tecumseh Sherman",
+      role: "Jenderal Union, Perang Sipil AS",
+      context: "Kalimat yang diucapkan tahun 1879. Simple tapi menusuk — menggambarkan kengerian perang sebenarnya."
     },
     {
-      title: "Selamanya 💞",
-      text: "Aku ingin bersamamu selamanya, melewati suka dan duka bersama."
+      icon: "🇻🇳",
+      quote: "Aku tidak akan menjadi orang pertama yang kehilangan Vietnam, dan aku tidak akan menjadi orang terakhir yang kehilangan Amerika.",
+      author: "Richard Nixon",
+      role: "Presiden AS ke-37",
+      context: "Disampaikan saat Perang Vietnam memanas, 1969. Menunjukkan dilema politik dalam perang yang tak berujung."
     },
     {
-      title: "Kamu Istimewa ✨",
-      text: "Di antara miliaran manusia, aku memilihmu. Dan akan selalu memilihmu."
+      icon: "🎖️",
+      quote: "Prajurit yang baik tidak bertanya mengapa, ia hanya bertanya ke mana.",
+      author: "Sun Tzu",
+      role: "Jenderal & Filsuf Perang, Tiongkok Kuno",
+      context: "Dari kitab 'The Art of War' (Seni Berperang). Buku yang masih dipelajari militer dunia hingga kini."
     },
     {
-      title: "Jantungku 💓",
-      text: "Kamu adalah detak jantungku, denyut nadi yang membuatku hidup."
+      icon: "⚡",
+      quote: "Kemerdekaan tidak pernah diberikan. Ia harus diperjuangkan.",
+      author: "Aung San Suu Kyi",
+      role: "Aktivis Kemerdekaan Myanmar",
+      context: "Kata-kata yang menjadi semangat perjuangan banyak bangsa, termasuk Indonesia melawan penjajah."
     }
   ];
 
   // ============================================
-  // HALAMAN UTAMA - BACKGROUND BINER
+  // BACKGROUND BINER
   // ============================================
   const canvas = document.getElementById('binaryBg');
   const ctx = canvas.getContext('2d');
@@ -476,8 +587,6 @@
   // ============================================
   // GENERATE QR
   // ============================================
-  // QR berisi URL yang kalau di-scan akan buka halaman utama
-  // Kita pakai URL GitHub Pages kamu
   const BASE_URL = 'https://ibnuu254.github.io/sistem-verifikasi';
 
   function qrUrl(text, size) {
@@ -487,14 +596,12 @@
            '&color=000000&bgcolor=FFFFFF&margin=0&ecc=H';
   }
 
-  // Setiap QR berisi link dengan parameter #love=0,1,2,dst
-  // Jadi saat di-scan dari HP, langsung buka halaman cinta yang sesuai
   function renderAllQR() {
     document.querySelectorAll('[data-side]').forEach(faceEl => {
       const side = faceEl.dataset.side;
       const img = faceEl.querySelector('img');
       if (img) {
-        img.src = qrUrl(BASE_URL + '#love=' + side, 400);
+        img.src = qrUrl(BASE_URL + '#war=' + side, 400);
       }
     });
   }
@@ -517,7 +624,7 @@
   }
 
   body.addEventListener('mousedown', (e) => {
-    if (e.target.closest('#lovePage')) return;
+    if (e.target.closest('#warPage')) return;
     isDragging = true;
     body.classList.add('dragging');
     lastX = e.clientX;
@@ -541,8 +648,7 @@
   document.getElementById('spinBtn').onclick = () => { autoSpin = true; };
   document.getElementById('stopBtn').onclick = () => { autoSpin = false; };
   document.getElementById('randomBtn').onclick = () => {
-    // Acak urutan pesan
-    LOVE_MESSAGES.sort(() => Math.random() - 0.5);
+    WAR_QUOTES.sort(() => Math.random() - 0.5);
   };
 
   function loop() {
@@ -557,124 +663,95 @@
   updateQR();
 
   // ============================================
-  // KLIK QR → BUKA HALAMAN CINTA
+  // KLIK QR → BUKA KUTIPAN
   // ============================================
   document.querySelectorAll('[data-side]').forEach(faceEl => {
     faceEl.addEventListener('click', () => {
       const side = parseInt(faceEl.dataset.side);
-      openLovePage(side);
+      openWarPage(side);
     });
   });
 
   // ============================================
-  // HALAMAN CINTA - BACKGROUND HATI JATUH
+  // EFEK PERCIKAN API
   // ============================================
-  const lovePage = document.getElementById('lovePage');
-  const loveBg = document.getElementById('loveBg');
-  const loveCtx = loveBg.getContext('2d');
-  let loveHearts = [];
-  let loveAnimId = null;
+  const warPage = document.getElementById('warPage');
+  let sparkInterval = null;
 
-  const HEART_EMOJIS = ['💖', '💕', '💗', '💓', '💞', '❤️', '💘', '🌸'];
+  function createSpark() {
+    const spark = document.createElement('div');
+    spark.className = 'spark';
+    spark.style.left = Math.random() * 100 + '%';
+    spark.style.top = (60 + Math.random() * 40) + '%';
+    warPage.appendChild(spark);
 
-  function initLoveBg() {
-    loveBg.width = window.innerWidth;
-    loveBg.height = window.innerHeight;
-    loveHearts = [];
-    for (let i = 0; i < 40; i++) {
-      loveHearts.push(createHeart());
+    const duration = 1500 + Math.random() * 2000;
+    const driftX = (Math.random() - 0.5) * 100;
+    const driftY = -(200 + Math.random() * 300);
+
+    spark.animate([
+      { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+      { transform: `translate(${driftX}px, ${driftY}px) scale(0)`, opacity: 0 }
+    ], {
+      duration: duration,
+      easing: 'ease-out'
+    }).onfinish = () => spark.remove();
+  }
+
+  function startSparks() {
+    if (sparkInterval) return;
+    sparkInterval = setInterval(createSpark, 200);
+  }
+
+  function stopSparks() {
+    if (sparkInterval) {
+      clearInterval(sparkInterval);
+      sparkInterval = null;
     }
-  }
-
-  function createHeart() {
-    return {
-      x: Math.random() * loveBg.width,
-      y: Math.random() * -loveBg.height,
-      size: 16 + Math.random() * 24,
-      speed: 0.5 + Math.random() * 1.5,
-      emoji: HEART_EMOJIS[Math.floor(Math.random() * HEART_EMOJIS.length)],
-      sway: Math.random() * Math.PI * 2,
-      swaySpeed: 0.01 + Math.random() * 0.02
-    };
-  }
-
-  function drawLoveBg() {
-    loveCtx.clearRect(0, 0, loveBg.width, loveBg.height);
-
-    loveHearts.forEach((h, i) => {
-      loveCtx.font = h.size + 'px Arial';
-      loveCtx.textAlign = 'center';
-      loveCtx.globalAlpha = 0.7;
-      loveCtx.fillText(h.emoji, h.x + Math.sin(h.sway) * 20, h.y);
-
-      h.y += h.speed;
-      h.sway += h.swaySpeed;
-
-      if (h.y > loveBg.height + 50) {
-        loveHearts[i] = createHeart();
-        loveHearts[i].y = -50;
-      }
-    });
-
-    loveCtx.globalAlpha = 1;
-    loveAnimId = requestAnimationFrame(drawLoveBg);
+    warPage.querySelectorAll('.spark').forEach(s => s.remove());
   }
 
   // ============================================
-  // OPEN / CLOSE LOVE PAGE
+  // OPEN / CLOSE KUTIPAN
   // ============================================
-  function openLovePage(sideIndex) {
-    const msg = LOVE_MESSAGES[sideIndex % LOVE_MESSAGES.length];
-    document.getElementById('loveTitle').textContent = msg.title;
-    document.getElementById('loveText').textContent = msg.text;
+  function openWarPage(sideIndex) {
+    const data = WAR_QUOTES[sideIndex % WAR_QUOTES.length];
 
-    lovePage.classList.add('active');
+    document.getElementById('warIcon').textContent = data.icon;
+    document.getElementById('warQuote').textContent = data.quote;
+    document.getElementById('warAuthor').textContent = '— ' + data.author;
+    document.getElementById('warRole').textContent = data.role;
+    document.getElementById('warContext').textContent = data.context;
+
+    warPage.classList.add('active');
     document.getElementById('mainPage').style.opacity = '0';
-
-    if (!loveAnimId) {
-      initLoveBg();
-      drawLoveBg();
-    }
+    startSparks();
   }
 
-  function closeLovePage() {
-    lovePage.classList.remove('active');
+  function closeWarPage() {
+    warPage.classList.remove('active');
     document.getElementById('mainPage').style.opacity = '1';
-
-    if (loveAnimId) {
-      cancelAnimationFrame(loveAnimId);
-      loveAnimId = null;
-    }
+    stopSparks();
   }
 
-  document.getElementById('backBtn').addEventListener('click', closeLovePage);
+  document.getElementById('backBtn').addEventListener('click', closeWarPage);
 
   // ============================================
-  // CEK URL: kalau ada #love=N → langsung buka halaman cinta
-  // (untuk yang scan QR dari HP)
+  // CEK URL: #war=N
   // ============================================
   function checkHash() {
     const hash = window.location.hash;
-    const match = hash.match(/#love=(\d+)/);
+    const match = hash.match(/#war=(\d+)/);
     if (match) {
       const side = parseInt(match[1]);
-      setTimeout(() => openLovePage(side), 500);
+      setTimeout(() => openWarPage(side), 500);
     } else {
-      closeLovePage();
+      closeWarPage();
     }
   }
 
   window.addEventListener('hashchange', checkHash);
   window.addEventListener('load', checkHash);
-
-  // ============================================
-  // RESIZE HANDLER
-  // ============================================
-  window.addEventListener('resize', () => {
-    if (loveAnimId) {
-      initLoveBg();
-    }
-  });
 </script>
 
 </body>
