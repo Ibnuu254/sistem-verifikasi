@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistem Verifikasi</title>
+<style>
+  body {
+    background: #000;
+    color: #00ff41;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    user-select: none;
+  }
+
+  body.dragging { cursor: grabbing; }
+
+  #logoBg {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 320px;
+    height: 320px;
+    opacity: 0.22;
+    z-index: 0;
+    pointer-events: none;
+    animation: creepyPulse 3s ease-in-out infinite;
+  }
+
+  @keyframes creepyPulse {
+    0%, 100% { opacity: 0.18; transform: translate(-50%, -50%) scale(1); }
+    50%      { opacity: 0.32; transform: translate(-50%, -50%) scale(1.03); }
+    47%      { opacity: 0.10; transform: translate(-50%, -50%) scale(1) translateX(3px); }
+    53%      { opacity: 0.30; transform: translate(-50%, -50%) scale(1) translateX(-3px); }
+  }
+
+  #binaryBg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.6;
+  }
+
+  h1 {
+    position: fixed;
+    top: 20px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 20px;
+    color: #00ff41;
+    margin: 0;
+    z-index: 3;
+    letter-spacing: 3px;
+  }
+
+  #scene {
+    width: 100%;
+    height: 100%;
+    perspective: 1200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .qr-container {
+    width: 240px;
+    height: 240px;
+    position: relative;
+    transform-style: preserve-3d;
+  }
+
+  .qr-card {
+    width: 240px;
+    height: 240px;
+    position: relative;
+    transform-style: preserve-3d;
+  }
+
+  .qr-face {
+    position: absolute;
+    width: 240px;
+    height: 240px;
+    background: #fff;
+    border: 4px solid #00ff41;
+    box-shadow:
+      0 0 25px rgba(0, 255, 65, 0.8),
+      inset 0 0 10px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    overflow: hidden;
+    padding: 6px;
+  }
+
+  .qr-face img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+  }
+
+  .front  { transform: translateZ(120px); }
+  .back   { transform: rotateY(180deg) translateZ(120px); }
+  .right  { transform: rotateY(90deg) translateZ(120px); }
+  .left   { transform: rotateY(-90deg) translateZ(120px); }
+  .top    { transform: rotateX(90deg) translateZ(120px); }
+  .bottom { transform: rotateX(-90deg) translateZ(120px); }
+
+  .scan-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg,
+                transparent,
+                #00ff41,
+                #fff,
+                #00ff41,
+                transparent);
+    box-shadow: 0 0 20px #00ff41;
+    animation: scan 2s linear infinite;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  @keyframes scan {
+    0%   { top: 0%; }
+    100% { top: 100%; }
+  }
+
+  .buttons {
+    position: fixed;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    z-index: 3;
+  }
+
+  button {
+    background: #000;
+    color: #00ff41;
+    border: 2px solid #00ff41;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-family: Arial, sans-serif;
+    cursor: pointer;
+    margin: 0 5px;
+  }
+
+  button:hover {
+    background: #00ff41;
+    color: #000;
+  }
+
+  .info {
+    position: fixed;
+    bottom: 70px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 11px;
+    color: #00ff41;
+    opacity: 0.6;
+    z-index: 3;
+    letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+
+<svg id="logoBg" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="glitch">
+      <feGaussianBlur stdDeviation="1" result="blur"/>
+      <feOffset in="blur" dx="3" dy="0" result="o1"/>
+      <feOffset in="blur" dx="-3" dy="0" result="o2"/>
+      <feMerge>
+        <feMergeNode in="o1"/>
+        <feMergeNode in="o2"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <polygon points="200,10 365,105 365,295 200,390 35,295 35,105"
+           fill="none" stroke="#00ff41" stroke-width="8"/>
+  <polygon points="200,55 330,132 330,268 200,345 70,268 70,132"
+           fill="none" stroke="#00ff41" stroke-width="4" opacity="0.8"/>
+  <polygon points="200,100 295,155 295,245 200,300 105,245 105,155"
+           fill="none" stroke="#00ff41" stroke-width="2" opacity="0.5"/>
+  <polygon points="200,75 320,295 80,295"
+           fill="none" stroke="#00ff41" stroke-width="5"/>
+  <polygon points="200,110 290,280 110,280"
+           fill="none" stroke="#00ff41" stroke-width="2" opacity="0.7"/>
+
+  <path d="M 115,90 Q 80,90 80,135 L 80,175 Q 80,200 55,200 Q 80,200 80,225 L 80,265 Q 80,310 115,310"
+        fill="none" stroke="#00ff41" stroke-width="8" stroke-linecap="round"
+        filter="url(#glitch)"/>
+  <path d="M 285,90 Q 320,90 320,135 L 320,175 Q 320,200 345,200 Q 320,200 320,225 L 320,265 Q 320,310 285,310"
+        fill="none" stroke="#00ff41" stroke-width="8" stroke-linecap="round"
+        filter="url(#glitch)"/>
+
+  <circle cx="200" cy="10" r="4" fill="#00ff41"/>
+  <circle cx="365" cy="105" r="4" fill="#00ff41"/>
+  <circle cx="365" cy="295" r="4" fill="#00ff41"/>
+  <circle cx="200" cy="390" r="4" fill="#00ff41"/>
+  <circle cx="35" cy="295" r="4" fill="#00ff41"/>
+  <circle cx="35" cy="105" r="4" fill="#00ff41"/>
+</svg>
+
+<canvas id="binaryBg"></canvas>
+
+<h1>SISTEM VERIFIKASI</h1>
+
+<div id="scene">
+  <div class="qr-container">
+    <div class="qr-card" id="qrCard">
+      <div class="qr-face front"  data-qr="front">
+        <img alt="QR">
+        <div class="scan-line"></div>
+      </div>
+      <div class="qr-face back"   data-qr="back">
+        <img alt="QR">
+        <div class="scan-line"></div>
+      </div>
+      <div class="qr-face right"  data-qr="right">
+        <img alt="QR">
+        <div class="scan-line"></div>
+      </div>
+      <div class="qr-face left"   data-qr="left">
+        <img alt="QR">
+        <div class="scan-line"></div>
+      </div>
+      <div class="qr-face top"    data-qr="top">
+        <img alt="QR">
+        <div class="scan-line"></div>
+      </div>
+      <div class="qr-face bottom" data-qr="bottom">
+        <img alt="QR">
+        <div class="scan-line"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="info">📱 Scan QR-nya dengan kamera HP kamu</div>
+
+<div class="buttons">
+  <button id="spinBtn">Putar Otomatis</button>
+  <button id="stopBtn">Stop</button>
+  <button id="randomBtn">Ganti Link</button>
+</div>
+
+<script>
+  // ====== KONFIGURASI LINK ======
+  const LINKS = {
+    front:  'https://wa.me/6281234567890',
+    back:   'https://github.com',
+    right:  'https://www.google.com',
+    left:   'https://www.youtube.com',
+    top:    'https://www.instagram.com',
+    bottom: 'https://www.tiktok.com'
+  };
+
+  // ====== GENERATE QR PAKAI API SERVER ======
+  // Pakai api.qrserver.com — paling reliable, tidak butuh library
+  function qrUrl(text, size) {
+    const s = size || 400;
+    return 'https://api.qrserver.com/v1/create-qr-code/?size=' + s + 'x' + s +
+           '&data=' + encodeURIComponent(text) +
+           '&color=000000&bgcolor=FFFFFF&margin=0&ecc=H';
+  }
+
+  function renderAllQR() {
+    document.querySelectorAll('[data-qr]').forEach(faceEl => {
+      const key = faceEl.dataset.qr;
+      const img = faceEl.querySelector('img');
+      if (img) {
+        img.src = qrUrl(LINKS[key], 400);
+      }
+    });
+  }
+
+  renderAllQR();
+
+  // ====== HUJAN BINER ======
+  const canvas = document.getElementById('binaryBg');
+  const ctx = canvas.getContext('2d');
+  let columns = [];
+  const fontSize = 16;
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const colCount = Math.floor(canvas.width / fontSize);
+    columns = [];
+    for (let i = 0; i < colCount; i++) {
+      columns.push({
+        x: i * fontSize,
+        y: Math.random() * canvas.height,
+        speed: 1 + Math.random() * 2
+      });
+    }
+  }
+
+  function drawBinary() {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.font = fontSize + 'px monospace';
+    ctx.fillStyle = '#00ff41';
+    columns.forEach(col => {
+      const bit = Math.random() > 0.5 ? '1' : '0';
+      ctx.fillText(bit, col.x, col.y);
+      col.y += col.speed * fontSize * 0.3;
+      if (col.y > canvas.height + fontSize) {
+        col.y = -fontSize;
+        col.speed = 1 + Math.random() * 2;
+      }
+    });
+  }
+
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+  setInterval(drawBinary, 50);
+
+  // ====== QR 3D ======
+  const qrCard = document.getElementById('qrCard');
+  const body = document.body;
+
+  let rotX = -10, rotY = 20;
+  let isDragging = false;
+  let lastX = 0, lastY = 0;
+  let autoSpin = false;
+
+  function updateQR() {
+    qrCard.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+  }
+
+  body.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    body.classList.add('dragging');
+    lastX = e.clientX;
+    lastY = e.clientY;
+  });
+
+  body.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    rotY += (e.clientX - lastX) * 0.5;
+    rotX -= (e.clientY - lastY) * 0.5;
+    lastX = e.clientX;
+    lastY = e.clientY;
+    updateQR();
+  });
+
+  body.addEventListener('mouseup', () => {
+    isDragging = false;
+    body.classList.remove('dragging');
+  });
+
+  document.getElementById('spinBtn').onclick = () => { autoSpin = true; };
+  document.getElementById('stopBtn').onclick = () => { autoSpin = false; };
+  document.getElementById('randomBtn').onclick = () => {
+    const q = Math.random().toString(36).substring(7);
+    LINKS.front  = 'https://www.google.com/search?q=' + q;
+    LINKS.back   = 'https://www.google.com/search?q=' + q + '-b';
+    LINKS.right  = 'https://www.google.com/search?q=' + q + '-r';
+    LINKS.left   = 'https://www.google.com/search?q=' + q + '-l';
+    LINKS.top    = 'https://www.google.com/search?q=' + q + '-t';
+    LINKS.bottom = 'https://www.google.com/search?q=' + q + '-bot';
+    renderAllQR();
+  };
+
+  function loop() {
+    if (autoSpin && !isDragging) {
+      rotY += 1;
+      rotX += 0.4;
+      updateQR();
+    }
+    requestAnimationFrame(loop);
+  }
+  loop();
+  updateQR();
+</script>
+
+</body>
+</html>
